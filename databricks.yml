@@ -1,0 +1,12 @@
+bundle:
+  name: metrics-exporter
+
+sync:
+  exclude:
+    - .env
+    - .venv
+
+targets:
+  dev:
+    mode: development
+    default: true
