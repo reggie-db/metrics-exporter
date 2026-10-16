@@ -182,6 +182,28 @@ databricks jobs submit \
 The setup notebook is idempotent. Re-running it updates the named job and
 dashboard instead of creating duplicates.
 
+## Setup validation and output
+
+Setup prints one JSON status record per step directly in notebook output. The
+records include configured values, resolved endpoints, skipped foundation
+endpoints, inference-table state, workspace paths, SQL warehouse selection, job
+state, query validation, and dashboard publication.
+
+An empty `INCLUDE_ENDPOINT_NAMES` value remains an empty job parameter. This is
+intentional. The continuous collector owns hourly endpoint discovery. A
+non-empty include list is passed unchanged after setup verifies that every name
+exists, is not a Foundation Model API endpoint, and supports metrics export.
+
+Setup stops immediately when it detects:
+
+- Unknown or foundation endpoint names in the include list.
+- Missing collector notebooks or dashboard parent folders.
+- Missing catalogs, schema creation failures, or unavailable SQL warehouses.
+- Duplicate jobs or dashboards with the configured name.
+- Invalid collection controls or empty runtime dependencies.
+- Collector startup failures.
+- Invalid dashboard dataset queries.
+
 ## Deploy by uploading notebooks
 
 1. In the Databricks workspace, create a folder in Workspace.
