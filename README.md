@@ -65,10 +65,21 @@ Edit the first code cell in `model_serving_metrics_setup.ipynb`.
 
 : Name of the continuous Lakeflow Job.
 
+`JOB_ID`
+
+: Existing job ID to update. Leave empty to resolve a unique job by
+  `JOB_NAME`. Set this when multiple jobs share the same name.
+
 `DASHBOARD_NAME`
 
 : Name of the AI/BI dashboard. Re-running setup updates the existing dashboard
   with this name.
+
+`DASHBOARD_ID`
+
+: Existing dashboard ID to update. Leave empty to resolve a unique active
+  dashboard by `DASHBOARD_NAME`. Set this when multiple dashboards share the
+  same name.
 
 `COLLECTOR_NOTEBOOK_NAME`
 
@@ -180,7 +191,10 @@ databricks jobs submit \
 ```
 
 The setup notebook is idempotent. Re-running it updates the named job and
-dashboard instead of creating duplicates.
+dashboard instead of creating duplicates. Unchanged resources are left
+running without reset or publication. Changed jobs are reset in place when
+possible. Changed dashboards are updated and verified. If an update cannot
+converge, setup deletes and recreates only the explicitly resolved resource.
 
 ## Setup validation and output
 
@@ -200,9 +214,10 @@ Setup stops immediately when it detects:
 - Missing collector notebooks or dashboard parent folders.
 - Missing catalogs, schema creation failures, or unavailable SQL warehouses.
 - Duplicate jobs or dashboards with the configured name.
+- Dashboard dataset catalog/schema mismatches after an update.
 - Invalid collection controls or empty runtime dependencies.
-- Collector startup failures.
-- Invalid dashboard dataset queries.
+- Collector startup failures, stale run parameters, or empty dashboard views.
+- Invalid or empty dashboard dataset queries.
 
 ## Deploy by uploading notebooks
 
