@@ -128,7 +128,8 @@ Edit the first code cell in `model_serving_metrics_setup.ipynb`.
 
 All setup controls are also available as Databricks notebook widgets. A
 gitignored `.env` file placed beside the setup notebook can provide widget
-values when a widget does not already exist.
+values when a widget does not already exist. Resolution order is existing
+widget value, `.env`, process environment, then code default.
 
 List values use CSV. Spaces and empty items are removed:
 
@@ -211,10 +212,18 @@ converge, setup deletes and recreates only the explicitly resolved resource.
 
 ## Setup validation and output
 
-Setup prints one JSON status record per step directly in notebook output. The
-records include configured values, resolved endpoints, skipped foundation
-endpoints, inference-table state, workspace paths, SQL warehouse selection, job
-state, query validation, and dashboard publication.
+Setup and collection print formatted status records directly in notebook
+output:
+
+```text
+[INFO] serving_metrics_setup 2026-10-20T02:00:00+00:00 - {"event":"setup_complete",...}
+```
+
+The suffix is compact JSON when structured fields are present and plain text
+for a text-only event. Records include configured values, resolved endpoints,
+skipped foundation endpoints, inference-table state, workspace paths, SQL
+warehouse selection, job state, query validation, collection cycles, and
+dashboard publication.
 
 An empty `INCLUDE_ENDPOINT_NAMES` value remains an empty job parameter. This is
 intentional. The continuous collector owns hourly endpoint discovery. A
