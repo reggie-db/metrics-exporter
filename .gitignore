@@ -1,5 +1,6 @@
 
 .databricks/
+.tmp/
 .venv/
 .vscode/
 

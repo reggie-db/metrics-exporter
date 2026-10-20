@@ -217,6 +217,12 @@ After a continuous-job setting changes, setup cancels only stale active runs of
 that managed job so Databricks can start a replacement with the resolved
 configuration.
 
+When setup upgrades resources created by an earlier version, it removes legacy
+job parameters and task base parameters, restarts the collector when its
+notebook hash changes, and replaces the analytical views in place. Existing
+Delta history is preserved. The dashboard ID is preserved unless its draft
+cannot be reconciled with the requested definition.
+
 ## Setup validation and output
 
 Setup and collection print formatted status records directly in notebook
