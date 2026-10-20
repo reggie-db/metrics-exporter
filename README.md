@@ -44,7 +44,8 @@ collector retains each published snapshot so the dashboard can query history.
 
 ## Configure the notebooks
 
-Edit the first code cell in `model_serving_metrics_setup.ipynb`.
+Copy `.env.example` to `.env`, place it beside both notebooks, and set any
+values that need to differ from the internal notebook defaults.
 
 `INCLUDE_ENDPOINT_NAMES`
 
@@ -90,6 +91,10 @@ Edit the first code cell in `model_serving_metrics_setup.ipynb`.
 
 : Poll interval for metrics-capable endpoints. The default is 60 seconds.
 
+`ENDPOINT_REFRESH_CYCLES`
+
+: Number of collection cycles between workspace endpoint-discovery refreshes.
+
 `COLLECTION_PAUSE_STATUS`
 
 : `UNPAUSED` starts or keeps the continuous job running. `PAUSED` creates or
@@ -126,10 +131,9 @@ Edit the first code cell in `model_serving_metrics_setup.ipynb`.
 
 : Default rolling window used by dashboard datasets.
 
-All setup controls are also available as Databricks notebook widgets. A
-gitignored `.env` file placed beside the setup notebook can provide widget
-values when a widget does not already exist. Resolution order is existing
-widget value, `.env`, process environment, then code default.
+Setup and collection read a gitignored `.env` file beside the notebooks.
+Values in `.env` override internal notebook defaults. Unknown `.env` names are
+ignored and listed in resolved-configuration logging.
 
 List values use CSV. Spaces and empty items are removed:
 
@@ -209,6 +213,9 @@ dashboard instead of creating duplicates. Unchanged resources are left
 running without reset or publication. Changed jobs are reset in place when
 possible. Changed dashboards are updated and verified. If an update cannot
 converge, setup deletes and recreates only the explicitly resolved resource.
+After a continuous-job setting changes, setup cancels only stale active runs of
+that managed job so Databricks can start a replacement with the resolved
+configuration.
 
 ## Setup validation and output
 
@@ -225,10 +232,8 @@ skipped foundation endpoints, inference-table state, workspace paths, SQL
 warehouse selection, job state, query validation, collection cycles, and
 dashboard publication.
 
-An empty `INCLUDE_ENDPOINT_NAMES` value remains an empty job parameter. This is
-intentional. The continuous collector owns hourly endpoint discovery. A
-non-empty include list is passed unchanged after setup verifies that every name
-exists, is not a Foundation Model API endpoint, and supports metrics export.
+An empty `INCLUDE_ENDPOINT_NAMES` value enables hourly endpoint discovery. A
+non-empty include list is validated before setup configures the collector.
 
 Setup stops immediately when it detects:
 
@@ -247,8 +252,8 @@ Setup stops immediately when it detects:
 2. Import `model_serving_metrics_setup.ipynb`.
 3. Import `model_serving_metrics_collector.ipynb` into the same folder.
 4. Open the setup notebook.
-5. Edit its first code cell.
-6. Select **Run all**.
+5. Create a `.env` workspace file in the same folder when overrides are needed.
+6. Select **Run all** in the setup notebook.
 
 The setup notebook creates or updates the continuous job and dashboard. The
 collector notebook should normally run only through that job.
