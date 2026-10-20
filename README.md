@@ -126,6 +126,19 @@ Edit the first code cell in `model_serving_metrics_setup.ipynb`.
 
 : Default rolling window used by dashboard datasets.
 
+All setup controls are also available as Databricks notebook widgets. A
+gitignored `.env` file placed beside the setup notebook can provide widget
+values when a widget does not already exist.
+
+List values use CSV. Spaces and empty items are removed:
+
+```dotenv
+INCLUDE_ENDPOINT_NAMES=bww-promise-time-endpoint-uat,another-endpoint
+COLLECTOR_DEPENDENCIES='"prometheus-client>=0.20,<1",databricks-sdk>=0.36.0'
+```
+
+Quote only CSV items that contain a comma.
+
 ## Deploy with the Databricks CLI
 
 Copy the local environment template and set an authenticated CLI profile:
